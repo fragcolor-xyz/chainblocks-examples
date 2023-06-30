@@ -441,7 +441,7 @@ Lastly, remember to call your shard and loop in your `main-wire`.
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
 
     (defloop spikeball-1
@@ -1099,7 +1099,7 @@ Create our logic to loop our damage effect animation which plays when `.damage-e
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
 
     (defloop spikeball-1
@@ -1757,7 +1757,7 @@ Remember to add this `UI.Area` before the `UI.Area` which houses your character 
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
 
     (defloop spikeball-1
@@ -2464,7 +2464,7 @@ Remember to call and `Step` them in the `main-wire`.
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
 
     (defloop spikeball-1
@@ -3262,7 +3262,7 @@ Finally its time to code the final bit for our game. We need to add some finalit
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
 
     (defloop spikeball-1

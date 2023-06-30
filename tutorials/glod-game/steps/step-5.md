@@ -40,7 +40,7 @@ Create a new `initialize-coin` shard. We will separate the initializing of our c
       (LoadTexture "GlodImages/Coin/Coin_1.png") = .coin-1)
     ```
 
-    1. Added to line 177.
+    1. Added to line 176.
 
 Remember to call `initialize-coin` in the `Setup` of the `main-wire`to ensure that these variables are only created once.
 
@@ -53,7 +53,7 @@ Remember to call `initialize-coin` in the `Setup` of the `main-wire`to ensure th
        (initialize-coin)) ;; (1)
     ```
 
-    1. Added to line 183.
+    1. Added to line 182.
 
 We then create a new `UI.Area` to draw the coin on the screen.
 
@@ -66,7 +66,7 @@ We then create a new `UI.Area` to draw the coin on the screen.
      :Contents (-> .coin-1 (UI.Image :Scale (float2 0.2)))
     ```
 
-    1. Added to line 218.
+    1. Added to line 220.
 
 === "Full Code So Far"
     
@@ -76,10 +76,9 @@ We then create a new `UI.Area` to draw the coin on the screen.
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -285,7 +284,10 @@ We then create a new `UI.Area` to draw the coin on the screen.
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))
 
           (UI.Area
@@ -326,6 +328,7 @@ We also create variables for controlling the Coin animation:
 
 === "Code Added"
     
+    ```{.clojure .annotate linenums="1"}
     ;; -------------- Initialize Coin ----------
     (defshards initialize-coin [] ;; (1)
       (LoadTexture "GlodImages/Coin/Coin_1.png") >> .coin-image-array
@@ -338,37 +341,43 @@ We also create variables for controlling the Coin animation:
       (Count .coin-image-array) (Math.Subtract 1) >= .coin-image-index-max
       0 >= .coin-image-index
       0.1 >= .coin-animation-speed)
+    ```
 
-    1. Updated `initialize-coin` at line 177.
+    1. Updated `initialize-coin` at line 176.
 
 Then we create a `coin-animation` loop that follows the same logic as Glod's animations.
 
 === "Code Added"
 
+    ```{.clojure .annotate linenums="1"}
     ;; -------------- Coin Animation ------------------
-    (defloop coin-animation
+    (defloop coin-animation ;; (1)
       .coin-image-index (Math.Add 1)
-      > .coin-image-index
+      .coin-image-index
       (When
        :Predicate (IsMore .coin-image-index-max)
        :Action (-> 0 > .coin-image-index))
 
       (Pause .coin-animation-speed)) 
+    ```
 
-    1. Added to line 190.
+    1. Added to line 189.
 
 Remember to `Step` into the Coin's animation in your `main-wire`!
 
 === "Code Added"
 
+    ```{.clojure .annotate linenums="1"}
     (Step coin-animation) ;; (1)
+    ```
 
-    1. Added to line 210.
+    1. Added to line 209.
 
 Lastly, update your coin's `UI.Area` to draw the image located in an index of `.coin-image-array`. The index used is determined by the value of `.coin-image-index`.
 
 === "Code Added"
 
+    ```{.clojure .annotate linenums="1"}
     (UI.Area
      :Position (float2 0 0)
      :Anchor Anchor.Top
@@ -376,20 +385,21 @@ Lastly, update your coin's `UI.Area` to draw the image located in an index of `.
      (-> .coin-image-array
          (Take .coin-image-index)
          (UI.Image :Scale (float2 0.2))))
+    ```
 
-    1. Added to line 239.
+    1. Added to line 241.
 
 === "Full Code So Far"
 
+    ```{.clojure .annotate linenums="1"}
     (defshards load-texture [name]
       (LoadImage name)
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -616,7 +626,10 @@ Lastly, update your coin's `UI.Area` to draw the image located in an index of `.
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))
 
           (UI.Area
@@ -634,6 +647,7 @@ Lastly, update your coin's `UI.Area` to draw the image located in an index of `.
     (defmesh main)
     (schedule main main-wire)
     (run main (/ 1.0 60))
+    ```
 
 Try running your code to see if your coin is animated. Good job if it is!
 
@@ -658,7 +672,7 @@ First we create the coin's x, y, and position variables.
     (float2 .coinx-1 .coiny-1) >= .coin-position-1
     ```
 
-    1. Added to line 190.
+    1. Added to line 189.
 
 We then replace the value of the `Position` parameter in our coin's `UI.Area`.
 
@@ -674,7 +688,7 @@ We then replace the value of the `Position` parameter in our coin's `UI.Area`.
          (UI.Image :Scale (float2 0.2))))
     ```
 
-    1. Amended at line 245.
+    1. Amended at line 247.
 
 
 === "Full Code So Far"
@@ -685,10 +699,9 @@ We then replace the value of the `Position` parameter in our coin's `UI.Area`.
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -920,7 +933,10 @@ We then replace the value of the `Position` parameter in our coin's `UI.Area`.
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))
 
           (UI.Area
@@ -953,7 +969,7 @@ First, create velocity and acceleration variables under the `initialize-coin` sh
     0.5 >= .coin-acceleration
     ```
 
-    1. Added to line 188, under `initialize-coin`.
+    1. Added to line 187, under `initialize-coin`.
 
 Create our `coin-gravity-logic` shard. The logic behind it is the same as our jump logic. We add velocity to the y position and then add acceleration to our velocity to increase the rate of increase.
 
@@ -972,7 +988,7 @@ Create our `coin-gravity-logic` shard. The logic behind it is the same as our ju
       (float2 .coinx-1 .coiny-1) > .coin-position-1)
     ```
 
-    1. Added to line 207.
+    1. Added to line 206.
 
 Remember to call the `coin-gravity-logic` shard in our `main-wire` loop.
 
@@ -982,7 +998,7 @@ Remember to call the `coin-gravity-logic` shard in our `main-wire` loop.
     (coin-gravity-logic) ;; (1)
     ```
 
-    1. Added to line 229.
+    1. Added to line 228.
 
 === "Full Code So Far"
     
@@ -992,10 +1008,9 @@ Remember to call the `coin-gravity-logic` shard in our `main-wire` loop.
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ---------- 
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -1241,7 +1256,10 @@ Remember to call the `coin-gravity-logic` shard in our `main-wire` loop.
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))
 
           (UI.Area

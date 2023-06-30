@@ -1428,7 +1428,7 @@ This time however, we will have different randomized x values and have this happ
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
     ```
 
@@ -1737,7 +1737,7 @@ Call your `spikeball-1` loop in the `main-wire`.
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+
       (Pause pausefloat))
 
     (defloop spikeball-1
@@ -2260,7 +2260,7 @@ Create the logic to dictate what happens when our spiked cannonball hits Glod. R
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+
       (Pause pausefloat))
 
     (defloop spikeball-1
@@ -2844,7 +2844,7 @@ All we have to do is to follow these easy steps:
       0.0 > spikeball-y
       0.0 > spikeball-velocity
       (float2 spikeball-x spikeball-y) > spikeball-position
-      .spikeball-x-1
+      
       (Pause pausefloat))
 
     (defloop spikeball-1

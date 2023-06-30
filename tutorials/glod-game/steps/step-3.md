@@ -1225,7 +1225,7 @@ When you run the programme, Glod will  return to his idle animation whenever you
     (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
     ```
 
-    > Add in a jumping right image and rename our original **.character-jumping** to **.character-jumping-left** added to line 5 - 7.
+    > Add in a jumping right image and rename our original **.character-jumping** to **.character-jumping-left**. Code added to lines 6-8. Remove the other images that are now not being used anymore.
 
     ```{.clojure .annotate linenums="1"}
     (Match [0 (-> .character-direction
@@ -1241,7 +1241,7 @@ When you run the programme, Glod will  return to his idle animation whenever you
             :Passthrough false)
     ```
 
-    > Then add another **Match** to our original **Match** to show the corresponding jump image depending on Glod's direction.Code added to lines 127-137.
+    > Then add another **Match** to our original **Match** to show the corresponding jump image depending on Glod's direction. Code added to lines 144-148.
 
 === "Full Code So Far"
     
@@ -1251,10 +1251,9 @@ When you run the programme, Glod will  return to his idle animation whenever you
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -1390,7 +1389,10 @@ When you run the programme, Glod will  return to his idle animation whenever you
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)

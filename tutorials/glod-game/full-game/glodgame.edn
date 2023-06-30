@@ -294,7 +294,7 @@
   0.0 > spikeball-y
   0.0 > spikeball-velocity
   (float2 spikeball-x spikeball-y) > spikeball-position
-  .spikeball-x-1
+  
   (Pause pausefloat))
 
 (defloop spikeball-1

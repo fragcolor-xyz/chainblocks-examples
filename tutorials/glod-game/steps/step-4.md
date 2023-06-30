@@ -29,7 +29,7 @@ Create the `.x` and `.y` variables which will be used to create the variable `.c
     (float2 .x .y) >= .character-position
     ```
 
-    1. Added under `initialize-character`, at line 14.
+    1. Added to line 13 under `initialize-character`.
 
 `.character-position` is then fed into the `Position` parameter of the `UI.Area` shard. When the `.x` and `.y` values are changed, the `UI.Area` will move and hence move our character.
 
@@ -38,12 +38,12 @@ Remember to change the `Anchor` to `Anchor.Top`!
 === "Code Added"
     ```{.clojure .annotate linenums="1"}
     (UI.Area
-     :Position .character-position ;; (1)
-     :Anchor Anchor.Top
+     :Position .character-position 
+     :Anchor Anchor.Top ;; (1)
      :Contents
     ```
     
-    1. Code edited at line 138.
+    1. Code edited at line 152.
 
 === "Full Code So Far"
     
@@ -53,10 +53,9 @@ Remember to change the `Anchor` to `Anchor.Top`!
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -196,7 +195,10 @@ Remember to change the `Anchor` to `Anchor.Top`!
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -222,7 +224,7 @@ First, create a new variable named `.character-x-velocity`. We will change this 
     0.0 >= .character-x-velocity ;; (1)
     ```
 
-    1. Added to `initialize-character` at line 17.
+    1. Added to line 16 under `initialize-character`.
 
 Create the `run-logic` shard. When `.character-x-velocity` is changed, it will be added to `.x` and `.character-position` will be updated accordingly.
 
@@ -237,7 +239,7 @@ Create the `run-logic` shard. When `.character-x-velocity` is changed, it will b
       (float2 .x .y) > .character-position)
     ```
 
-    1. Added to line 83.
+    1. Added to line 81.
 
  Update the value of `.character-x-velocity` whenever the left or right directional buttons are pressed. Remember to reset the value back to 0 when the buttons are released. If not, Glod will move to the left or right forever.
 
@@ -286,13 +288,13 @@ Create the `run-logic` shard. When `.character-x-velocity` is changed, it will b
         0.0 > .character-x-velocity)))
     ```
 
-    1. Updated within the `button-inputs` shard at line 90.
+    1. Updated within the `button-inputs` shard at line 89.
 
     ```{.clojure .annotate linenums="1"}
     (run-logic) ;; (1)
     ```
 
-    1. `run-logic` is added to the `main-wire` at line 134.
+    1. `run-logic` is added to the `main-wire` at line 133.
 
 === "Full Code So Far"
     
@@ -302,10 +304,9 @@ Create the `run-logic` shard. When `.character-x-velocity` is changed, it will b
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ---------- 
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -459,7 +460,10 @@ Create the `run-logic` shard. When `.character-x-velocity` is changed, it will b
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -487,7 +491,7 @@ Let's set up a boundary to ensure that Glod does not fall off the edge and into 
       var (Max min) (Min max) > var)
     ```
 
-  1. Added to line 82.
+  1. Added to line 81.
 
 This clamp function takes in a value and makes sure that it does not exceed the minimum and maximum values.
 
@@ -502,7 +506,7 @@ Call our `clamp` function in `run-logic` and set the `var` parameter to be `.x`,
     (clamp .x -600.0 600.0) ;; (1)
     ```
 
-    1. Added to line 93.
+    1. Added to line 92.
 
 === "Full Code So Far"
     
@@ -512,10 +516,9 @@ Call our `clamp` function in `run-logic` and set the `var` parameter to be `.x`,
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -675,7 +678,10 @@ Call our `clamp` function in `run-logic` and set the `var` parameter to be `.x`,
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction 
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2))) 
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))] 
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -709,7 +715,7 @@ First, create the variables that we will use.
     0.0 >= .character-y-acceleration
     ```
 
-    1. Added to lines 18 and 19.
+    1. Added to lines 17 and 18.
 
 Similar to `run-logic`, we will add `.character-y-velocity` to our `.y` variable. This time however, we will also add .`character-y-acceleration` to `.character-y-velocity`.
 
@@ -726,13 +732,13 @@ Similar to `run-logic`, we will add `.character-y-velocity` to our `.y` variable
       (float2 .x .y) > .character-position)
     ```
 
-    1. Added to line 98.
+    1. Added to line 97.
 
     ```{.clojure .annotate linenums="1"}
     (gravity-logic) ;; (1)
     ```
 
-    1. Added to line 160 in `main-wire`.
+    1. Added to line 154 in `main-wire`.
 
 Lastly we modify the value of `.character-y-velocity` and `.character-y-acceleration` whenever the Up directional button is pressed.
 
@@ -746,7 +752,7 @@ Lastly we modify the value of `.character-y-velocity` and `.character-y-accelera
                 -20.0 > .character-y-velocity ;; (1)
                 1.0 >  .character-y-acceleration))
     ```
-    1. Added to line 140 in `button-inputs`.
+    1. Added to line 132 in `button-inputs`.
 
 === "Full Code So Far"
     
@@ -756,10 +762,9 @@ Lastly we modify the value of `.character-y-velocity` and `.character-y-accelera
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ---------- 
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -934,7 +939,10 @@ Lastly we modify the value of `.character-y-velocity` and `.character-y-accelera
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction 
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2))) 
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))] 
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -973,7 +981,7 @@ First, call our `clamp` function in `gravity-logic` with `.y` as our `var`, -620
     (clamp .y -620.0 620.0) ;; (1)
     ```
 
-    1. Added to lines 107.
+    1. Added to lines 106.
 
 Next, add a conditional statement to ensure that our y velocity and acceleration reverts back to 0 when Glod is on the ground.
 
@@ -988,7 +996,7 @@ Next, add a conditional statement to ensure that our y velocity and acceleration
               0.0 > .character-y-acceleration))
     ```
 
-    1. Added to line 108.
+    1. Added to line 107.
 
 === "Full Code So Far"
     
@@ -998,10 +1006,9 @@ Next, add a conditional statement to ensure that our y velocity and acceleration
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ---------- 
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -1184,7 +1191,10 @@ Next, add a conditional statement to ensure that our y velocity and acceleration
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction 
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2))) 
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))] 
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -1230,7 +1240,7 @@ In `gravity-logic`, revert `character-state` to 0 when the character is jumping.
                           0 > .character-state))))
     ```
 
-    1. Added to line 114, under `gravity-logic`.
+    1. Added to line 113, under `gravity-logic`.
 
 === "Full Code So Far"
     
@@ -1240,10 +1250,9 @@ In `gravity-logic`, revert `character-state` to 0 when the character is jumping.
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ---------- 
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -1431,7 +1440,10 @@ In `gravity-logic`, revert `character-state` to 0 when the character is jumping.
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction 
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2))) 
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))] 
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -1480,7 +1492,7 @@ The second problem is also an easy fix. We simply put a `When` conditional state
       5.0 > .character-x-velocity))
     ```
 
-    1. Edited from line 127 onwards.
+    1. Edited from line 126 onwards.
 
 === "Full Code So Far"
     
@@ -1490,10 +1502,9 @@ The second problem is also an easy fix. We simply put a `When` conditional state
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ---------- 
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -1687,7 +1698,10 @@ The second problem is also an easy fix. We simply put a `When` conditional state
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction 
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2))) 
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))] 
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
@@ -1709,7 +1723,7 @@ First, create a `.can-jump` variable under `initialize-character`.
     true >= .can-jump ;; (1)
     ```
 
-    1. Added to line 13.
+    1. Added to line 12.
 
 Set it such that Glod cannot jump again when he is jumping. When the jump button is pressed, `.can-jump` becomes false.
 
@@ -1754,7 +1768,7 @@ Lastly we reset `.can-jump` back to true when Glod touches the floor again.
                         0 > .character-state))))
     ```
 
-    1. Edited from line 115 onwards.
+    1. Edited from line 114 onwards.
 
 === "Full Code So Far"
     
@@ -1764,10 +1778,9 @@ Lastly we reset `.can-jump` back to true when Glod touches the floor again.
       (GFX.Texture))
 
     (defshards initialize-character []
-      (LoadTexture "GlodImages/Character1.png") = .idle-left-image-array
-      (LoadTexture "GlodImages/Character1_Left.png") = .character-left
-      (LoadTexture "GlodImages/Character1_Right.png") = .character-right
-      (LoadTexture "GlodImages/Character1_Jumping.png") = .character-jumping
+      ;; -------------- Character Jumping  ----------
+      (LoadTexture "GlodImages/Character1_Jumping_Left.png") = .character-jumping-left
+      (LoadTexture "GlodImages/Character1_Jumping_Right.png") = .character-jumping-right
 
       0 >= .character-state
       0 >= .character-direction ;; 0 = facing left, 1 = facing right
@@ -1968,7 +1981,10 @@ Lastly we reset `.can-jump` back to true when Glod touches the floor again.
                                  :Passthrough false))
                     1 (-> .walking-left-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
                     2 (-> .walking-right-image-array (Take .walking-image-index) (UI.Image :Scale (float2 0.2)))
-                    3 (-> .character-jumping (UI.Image :Scale (float2 0.2)))]
+                    3 (->  .character-direction
+                          (Match [0 (-> .character-jumping-left (UI.Image :Scale (float2 0.2)))
+                                  1 (-> .character-jumping-right (UI.Image :Scale (float2 0.2)))]
+                                  :Passthrough false))]
                    :Passthrough false)))))
 
         (GFX.Render :Steps .render-steps)
